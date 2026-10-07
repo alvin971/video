@@ -107,6 +107,7 @@
   footer.site a { color: var(--muted); }
   footer.site p + p { margin-top: 10px; max-width: 720px; margin-left: auto; margin-right: auto; font-size: .8rem; }
 
+  [hidden] { display: none !important; }
   .sticky-cta { display: none; }
   @media (max-width: 700px) {
     section { padding: 54px 0; }
@@ -225,6 +226,7 @@
       </div>
 
     </div>
+    <p class="sub" style="margin:28px auto 0;font-size:.88rem">🔒 Paiement sécurisé par Stripe. Contenus numériques à accès immédiat : aucun remboursement après l'achat.</p>
   </div>
 </section>
 
@@ -285,7 +287,7 @@
     <details><summary>Comment fonctionnent les 30 reels créés pour moi ?</summary><p>Après votre achat, vous nous indiquez votre niche et vos objectifs. Nous produisons vos 30 premiers reels sur le mois et vous les livrons prêts à publier.</p></details>
     <details><summary>Le partenariat demande-t-il un paiement ?</summary><p>L'entrée dans le cercle se fait sur candidature. Les conditions précises (engagement, contrat, coûts d'API) vous sont présentées avant toute signature.</p></details>
     <details><summary>Les outils sont-ils payants ?</summary><p>Certains outils ont des versions gratuites, d'autres sont payants. Nous vous indiquons une configuration de départ économique.</p></details>
-    <details><summary>Puis-je me faire rembourser ?</summary><p>[À compléter avec votre politique de remboursement, par exemple 14 jours sur le Guide et la Formation.]</p></details>
+    <details><summary>Puis-je me faire rembourser ?</summary><p>Il s'agit de contenus numériques à accès immédiat : aucun remboursement n'est possible après l'achat. C'est pourquoi le Guide Vidéo est volontairement proposé à petit prix, pour tester la méthode avant d'aller plus loin.</p></details>
   </div>
 </section>
 
@@ -305,19 +307,46 @@
   </div>
 </footer>
 
+<div id="demo-modal" hidden style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card" style="max-width:420px;text-align:center">
+    <h3 id="demo-offer" style="margin-bottom:10px"></h3>
+    <p>Version de démonstration : le paiement Stripe sera branché ici.</p>
+    <button class="btn" id="demo-close" style="margin-top:20px;border:0;cursor:pointer">Fermer</button>
+  </div>
+</div>
+
 <div class="sticky-cta"><a class="btn" href="#offres">Voir les offres</a></div>
 
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Remplacez chaque "#" par votre lien de paiement / formulaire de candidature.
+  // Liens Stripe (Payment Links). Tant qu'un lien est vide (''), le bouton affiche une fenêtre de démo.
+  // Plus tard : collez ici l'URL du type 'https://buy.stripe.com/xxxx'.
   var LINKS = {
-    guide:    '#',   // Guide Vidéo – 29,99 €
-    complete: '#',   // Formation Complète + 30 Reels – 199 €
-    partenaire: '#'  // Candidature Cercle Partenaires (formulaire ou mailto:)
+    guide:      '',   // Guide Vidéo – 29,99 €
+    complete:   '',   // Formation Complète + 30 Reels – 199 €
+    partenaire: ''    // Candidature Cercle Partenaires (formulaire ou mailto:)
   };
+  var LABELS = {
+    guide: 'Guide Vidéo – 29,99 €',
+    complete: 'Formation Complète + 30 Reels – 199 €',
+    partenaire: 'Candidature Cercle Partenaires'
+  };
+
+  var modal = document.getElementById('demo-modal');
+  function closeModal() { modal.hidden = true; }
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.getElementById('demo-close').addEventListener('click', closeModal);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
   document.querySelectorAll('[data-buy]').forEach(function (a) {
-    a.setAttribute('href', LINKS[a.getAttribute('data-buy')] || '#');
+    var key = a.getAttribute('data-buy');
+    if (LINKS[key]) { a.setAttribute('href', LINKS[key]); return; }
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('demo-offer').textContent = LABELS[key];
+      modal.hidden = false;
+    });
   });
 </script>
 </body>
